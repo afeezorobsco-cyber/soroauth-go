@@ -46,12 +46,12 @@ func signerExamplePublicKeys(value xdr.ScVal) ([]string, error) {
 	return addresses, nil
 }
 
-// ExampleNewEd25519Signer signs a payload for a classic account with one key.
-// The value it returns is what the host decodes as AccountEd25519Signature: a
-// vector holding one {public_key, signature} map, keys in sorted order. The
-// signer verifies its own output before returning it; the check below repeats
-// that from the outside.
-func ExampleNewEd25519Signer() {
+// ExampleNewEd25519Signer_sign signs a payload for a classic account with one
+// key. The value it returns is what the host decodes as
+// AccountEd25519Signature: a vector holding one {public_key, signature} map,
+// keys in sorted order. The signer verifies its own output before returning
+// it; the check below repeats that from the outside.
+func ExampleNewEd25519Signer_sign() {
 	kp, err := signerExampleKey("soroauth-example-account")
 	if err != nil {
 		fmt.Println("error:", err)
@@ -79,14 +79,15 @@ func ExampleNewEd25519Signer() {
 	// verifies: true
 }
 
-// ExampleNewAccountMultiSigner signs for a classic multisig account. The keys
-// go in in any order and come out strictly ascending by raw public key,
-// because the host rejects any other order ("public keys are not ordered").
+// ExampleNewAccountMultiSigner_ordering signs for a classic multisig account.
+// The keys go in in any order and come out strictly ascending by raw public
+// key, because the host rejects any other order ("public keys are not
+// ordered").
 // The account being authorized need not be one of the signing keys.
 //
 // More than 20 keys is refused up front with ErrTooManySignatures, the host's
 // MAX_ACCOUNT_SIGNATURES, rather than discovered on-chain.
-func ExampleNewAccountMultiSigner() {
+func ExampleNewAccountMultiSigner_ordering() {
 	account, err := signerExampleKey("soroauth-example-multisig-account")
 	if err != nil {
 		fmt.Println("error:", err)
@@ -272,7 +273,7 @@ func ExampleRequireUserVerification() {
 	// refused: true
 }
 
-// ExampleNewPasskeySignerFromAssertion turns a WebAuthn assertion into a
+// ExampleNewPasskeySignerFromAssertion_verify turns a WebAuthn assertion into a
 // passkey wallet's signature value, verifying it first. The assertion here is
 // built in-process with a P-256 key derived from a fixed label; in a real flow
 // it comes from the browser and is parsed with ParseWebAuthnAssertion.
@@ -281,7 +282,7 @@ func ExampleRequireUserVerification() {
 // asked to sign, so an assertion from some other ceremony is refused. ECDSA
 // signing draws a fresh nonce, so the signature bytes differ on every run and
 // are not printed; their sizes and the verdicts are.
-func ExampleNewPasskeySignerFromAssertion() {
+func ExampleNewPasskeySignerFromAssertion_verify() {
 	seed := sha256.Sum256([]byte("soroauth-example-passkey-credential"))
 	d := new(big.Int).SetBytes(seed[:])
 	d.Mod(d, elliptic.P256().Params().N)
