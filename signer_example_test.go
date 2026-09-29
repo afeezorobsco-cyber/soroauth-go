@@ -285,8 +285,11 @@ func ExampleNewPasskeySignerFromAssertion() {
 	seed := sha256.Sum256([]byte("soroauth-example-passkey-credential"))
 	d := new(big.Int).SetBytes(seed[:])
 	d.Mod(d, elliptic.P256().Params().N)
-	x, y := elliptic.P256().ScalarBaseMult(d.Bytes())
-	key := &ecdsa.PrivateKey{PublicKey: ecdsa.PublicKey{Curve: elliptic.P256(), X: x, Y: y}, D: d}
+	key, err := ecdsa.ParseRawPrivateKey(elliptic.P256(), d.FillBytes(make([]byte, 32)))
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
 
 	payload := sha256.Sum256([]byte("soroauth-example-payload"))
 
